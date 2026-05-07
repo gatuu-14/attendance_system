@@ -1,0 +1,129 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h4><i class="fas fa-check-circle"></i> Mark Attendance</h4>
+    </div>
+    <div class="card-body">
+        {% if not students %}
+        <div class="alert alert-warning">
+            No students registered. Please <a href="{% url 'register_student' %}">register students</a> first.
+        </div>
+        {% else %}
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <label for="date" class="form-label">
+                        <strong><i class="fas fa-calendar-alt"></i> Select Date:</strong>
+                    </label>
+                    <input type="date" name="date" id="date" class="form-control" 
+                           value="{{ today|date:'Y-m-d' }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">&nbsp;</label><br>
+                    <button type="button" class="btn btn-secondary" onclick="markAll('P')">
+                        <i class="fas fa-user-check"></i> Mark All Present
+                    </button>
+                    <button type="button" class="btn btn-warning" onclick="markAll('L')">
+                        <i class="fas fa-hourglass-half"></i> Mark All Late
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="markAll('A')">
+                        <i class="fas fa-user-times"></i> Mark All Absent
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th width="5%">#</th>
+                            <th width="15%">Register Number</th>
+                            <th width="25%">Student Name</th>
+                            <th width="20%">Status</th>
+                            <th width="35%">Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ student.register_number }}</td>
+                            <td>{{ student.name }}</td>
+                            <td>
+                                <select name="status_{{ student.id }}" class="form-control status-select" data-student="{{ student.id }}">
+                                    <option value="P" selected>✅ Present</option>
+                                    <option value="A">❌ Absent</option>
+                                    <option value="L">⏰ Late</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" name="remarks_{{ student.id }}" 
+                                       class="form-control" placeholder="Optional remarks">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="fas fa-save"></i> Save Attendance
+                </button>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                <button type="button" class="btn btn-info btn-lg" onclick="resetForm()">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Function to mark all students with same status
+    function markAll(status) {
+        let selects = document.querySelectorAll('.status-select');
+        selects.forEach(select => {
+            select.value = status;
+        });
+        
+        let statusText = '';
+        if (status === 'P') statusText = 'Present';
+        else if (status === 'A') statusText = 'Absent';
+        else statusText = 'Late';
+        
+        alert(`All students marked as ${statusText}`);
+    }
+    
+    // Function to reset the form
+    function resetForm() {
+        if (confirm('Reset all selections to default (Present)?')) {
+            let selects = document.querySelectorAll('.status-select');
+            selects.forEach(select => {
+                select.value = 'P';
+            });
+            
+            let remarks = document.querySelectorAll('input[type="text"]');
+            remarks.forEach(remark => {
+                remark.value = '';
+            });
+        }
+    }
+    
+    // Set default date to today if not set
+    document.addEventListener('DOMContentLoaded', function() {
+        let dateInput = document.getElementById('date');
+        if (dateInput && !dateInput.value) {
+            let today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        }
+    });
+</script>
+{% endblock %}

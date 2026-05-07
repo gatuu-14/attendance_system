@@ -1,0 +1,61 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="fas fa-user-plus"></i> Register New Student</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Register Number</label>
+                            {{ form.register_number }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Full Name</label>
+                            {{ form.name }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Date of Birth</label>
+                            {{ form.date_of_birth }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Gender</label>
+                            {{ form.gender }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Email</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Phone</label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label>Address</label>
+                        {{ form.address }}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Register Student
+                    </button>
+                    <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

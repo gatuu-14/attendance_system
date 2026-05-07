@@ -1,0 +1,90 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card text-white">
+            <div class="card-body">
+                <h5><i class="fas fa-users"></i> Total Students</h5>
+                <h2>{{ total_students }}</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card text-white">
+            <div class="card-body">
+                <h5><i class="fas fa-calendar-check"></i> Today's Attendance</h5>
+                <h2>{{ today_attendance }}</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5><i class="fas fa-user-check"></i> Present</h5>
+                <h2>{{ present_today }}</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5><i class="fas fa-user-times"></i> Absent</h5>
+                <h2>{{ absent_today }}</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h5><i class="fas fa-hourglass-half"></i> Late</h5>
+                <h2>{{ late_today }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h4>Last 7 Days Attendance</h4>
+        <canvas id="attendanceChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('attendanceChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [{% for day in last_week %}'{{ day.date|date:"M d" }}',{% endfor %}],
+            datasets: [{
+                label: 'Attendance Percentage',
+                data: [{% for day in last_week %}{{ day.percentage }},{% endfor %}],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Percentage (%)'
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

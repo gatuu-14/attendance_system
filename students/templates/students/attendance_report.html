@@ -1,0 +1,76 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h4><i class="fas fa-chart-bar"></i> Attendance Report</h4>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row">
+            <div class="col-md-4">
+                <label>Start Date</label>
+                {{ form.start_date }}
+            </div>
+            <div class="col-md-4">
+                <label>End Date</label>
+                {{ form.end_date }}
+            </div>
+            <div class="col-md-4">
+                <label>&nbsp;</label><br>
+                <button type="submit" class="btn btn-primary">Generate Report</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if report_data %}
+<div class="alert alert-info">
+    <strong>Summary:</strong> {{ summary.start_date|date:"M d, Y" }} to {{ summary.end_date|date:"M d, Y" }}
+    <br>
+    Total Students: {{ summary.total_students }} | 
+    Total Attendance Records: {{ summary.total_records }} |
+    Overall Present: {{ summary.overall_present }} |
+    Overall Absent: {{ summary.overall_absent }} |
+    Overall Late: {{ summary.overall_late }}
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped" id="reportTable">
+        <thead class="table-dark">
+            <tr>
+                <th>Register No</th>
+                <th>Student Name</th>
+                <th>Present</th>
+                <th>Absent</th>
+                <th>Late</th>
+                <th>Total Days</th>
+                <th>Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in report_data %}
+            <tr>
+                <td>{{ data.student.register_number }}</td>
+                <td>{{ data.student.name }}</td>
+                <td class="text-success">{{ data.present }}</td>
+                <td class="text-danger">{{ data.absent }}</td>
+                <td class="text-warning">{{ data.late }}</td>
+                <td>{{ data.total }}</td>
+                <td>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" style="width: {{ data.percentage }}%">
+                            {{ data.percentage }}%
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<button onclick="window.print()" class="btn btn-secondary mt-3">
+    <i class="fas fa-print"></i> Print Report
+</button>
+{% endif %}
+{% endblock %}
